@@ -1,58 +1,67 @@
 import streamlit as st
 import pandas as pd
-import io
 import google.generativeai as genai
 
 # --- Gemini API Setup ---
-GEMINI_API_KEY = "AIzaSyAmZt-Pa31lf6TAZ_8p3S6qT2L8dNi-S1c"
+GEMINI_API_KEY = "AIzaSyAmZt-Pa31lf6TAZ_8p3S6qT2L8dNi-S1c"  # Replace this with your actual API key
 genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-2.5-flash-preview-05-20")
+model = genai.GenerativeModel("gemini-2.0-flash")
 
-# --- App Layout ---
-st.title("📊 Resource Utilization Plan Generator")
-st.write("Provide the details below to generate a downloadable project resource plan.")
+# --- Streamlit UI ---
+st.set_page_config(page_title="Resource Utilization Plan", layout="wide")
+st.title("📊 Project Resource Utilization Plan Generator")
+st.markdown("Upload a task sheet (CSV) and generate a resource-wise hours allocation plan using Gemini AI.")
 
-# --- User Inputs ---
-resources = st.text_area("👥 Enter Resource Names (comma-separated)", placeholder="Alice, Bob, Charlie")
-util_percent = st.slider("⚙️ Planned Utilization per Resource (%)", 10, 100, 80, step=5)
-num_tasks = st.number_input("🧩 Total Number of Tasks", min_value=1, step=1)
+# --- File Upload ---
+uploaded_file = st.file_uploader("📁 Upload Task Sheet (CSV format)", type=["csv"])
 
-if st.button("Generate Plan"):
-    if not resources:
-        st.warning("Please enter at least one resource name.")
+if uploaded_file:
+    df = pd.read_csv(uploaded_file)
+    st.subheader("📄 Uploaded Task Sheet")
+    st.dataframe(df)
+
+    required_columns = {"Task", "Assignee", "Estimated Hours"}
+    if not required_columns.issubset(df.columns):
+        st.error("CSV must contain the following columns: Task, Assignee, Estimated Hours")
     else:
-        resource_list = [r.strip() for r in resources.split(",")]
-        
-        # --- Gemini Prompt ---
+        # --- Prepare CSV data for prompt ---
+        tasks_text = df.to_csv(index=False)
+
         prompt = f"""
-        Create a task allocation plan for a project using the following data:
-        - Resources: {', '.join(resource_list)}
-        - Planned Utilization: {util_percent}%
-        - Total Tasks: {num_tasks}
-        
-        Output a table in CSV format with columns: Resource Name, Task Name, Task Number, Planned Utilization (%).
-        Distribute tasks proportionally based on utilization.
+        You are a project planner. Below is a CSV of tasks with their assignees and estimated hours:
+
+        {tasks_text}
+
+        Create a Resource Utilization Plan that includes:
+        1. A summary table with: Assignee, Total Hours, Task Split-up (Task: Hours)
+        2. Proper formatting in markdown for a clean table.
+
+        Ensure that each assignee's total allocated hours are summed correctly.
         """
 
-        response = model.generate_content(prompt)
-        csv_data = response.text.strip().split("```")[-2]  # Extract CSV portion
-        
-        # Convert CSV to DataFrame
-        try:
-            df = pd.read_csv(io.StringIO(csv_data))
-            st.dataframe(df)
+        # --- Generate Plan with Gemini ---
+        if st.button("🧠 Generate Resource Plan"):
+            with st.spinner("Generating resource plan using Gemini..."):
+                response = model.generate_content(prompt)
+                result_text = response.text
 
-            # Download link
-            buffer = io.BytesIO()
-            with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
-                df.to_excel(writer, index=False, sheet_name='Utilization Plan')
-                writer.save()
-                st.download_button(
-                    label="📥 Download Excel Plan",
-                    data=buffer,
-                    file_name="resource_utilization_plan.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                )
-        except Exception as e:
-            st.error("Failed to parse Gemini response. Please try again.")
-            st.exception(e)
+                st.subheader("✅ Generated Resource Utilization Plan")
+                st.markdown(result_text)
+
+                # --- Optional: Download as CSV ---
+                import re
+                from io import StringIO
+
+                def markdown_table_to_df(markdown_text):
+                    lines = markdown_text.strip().splitlines()
+                    lines = [line.strip() for line in lines if "|" in line and not line.startswith("|---")]
+                    lines = [line.strip("|").split("|") for line in lines]
+                    return pd.DataFrame(lines[1:], columns=[col.strip() for col in lines[0]])
+
+                try:
+                    df_out = markdown_table_to_df(result_text)
+                    csv = df_out.to_csv(index=False).encode("utf-8")
+                    st.download_button("📥 Download Plan as CSV", csv, "resource_utilization_plan.csv", "text/csv")
+                except Exception as e:
+                    st.warning("Could not convert markdown to CSV format. Please copy manually if needed.")
+                    st.text_area("Raw Output", value=result_text, height=300)
