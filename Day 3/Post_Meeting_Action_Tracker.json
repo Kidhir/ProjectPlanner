@@ -1,0 +1,166 @@
+{
+  "name": "Post-Meeting Action Tracker",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "fbdd5027-4a0f-4c42-9242-74001dec6387",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1-OKv9IjdfFUY3uQHDGALzspGIiDeFqBmr0AX2i8vE6c",
+          "mode": "list",
+          "cachedResultName": "Meeting_Notes_Form_Responses",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-OKv9IjdfFUY3uQHDGALzspGIiDeFqBmr0AX2i8vE6c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 964222692,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-OKv9IjdfFUY3uQHDGALzspGIiDeFqBmr0AX2i8vE6c/edit#gid=964222692"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        220,
+        0
+      ],
+      "id": "a89e71a7-d453-4853-aa28-a34a5cf6f8b2",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "nhXqG6m1rayAepmB",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a smart AI assistant specialized in enhancing meeting productivity.\nGiven the meeting notes below, identify and extract all clear action items. For each action item, extract the following:\nTask Description\nTask Owner (Responsible Person)\nDeadline (if mentioned)\nThen, for each task owner, generate a separate professional email that:\nMentions only the task(s) assigned to them\nClearly describes the task and deadline\nHas a polite, actionable tone\nUses a formal business email style\nFormat of each output should be:\n\nTo: [Task Owner Email or Placeholder]\nSubject: Action Required: [Short Task Summary]\n\nDear [Task Owner Name],\n\nFollowing our recent meeting, the following action item has been assigned to you:\n\nTask: [Task Description]  \nDeadline: [Deadline or \"Not specified\"]\n\nPlease ensure this task is completed as per the timeline. Let us know if you need any support.\n\nBest regards,  \n[Your Name or \"Meeting Coordinator\"]\n\nUse one email per task owner and do not include tasks not assigned to them.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "373d9c15-0193-44bd-a20d-80053b5e08c4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-preview-05-20",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        480,
+        220
+      ],
+      "id": "fcf954b6-d66f-42d1-837d-2c8b98800bac",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "O6ljSfaisfCD1inq",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "kidhirhussain@gmail.com",
+        "subject": "Due on your bucket to action immediately!",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        0
+      ],
+      "id": "59951f93-ee27-45ca-94bf-3336013b5206",
+      "name": "Gmail",
+      "webhookId": "a0e23b6b-757e-4afe-969a-8a37486dbc69",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "AyjlkYbhyXg5MOM6",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ec8de72a-fa8f-4fbd-9b41-fb1018300dff",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "60dba8f1fb7dbc75eae08371df67764a4f777e1fc17d9fbb35a5128ed0d6e15c"
+  },
+  "id": "WcQfXb6T7y1b8pR9",
+  "tags": []
+}

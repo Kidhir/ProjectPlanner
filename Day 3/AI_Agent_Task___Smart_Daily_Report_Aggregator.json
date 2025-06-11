@@ -1,0 +1,206 @@
+{
+  "name": "AI Agent Task - Smart Daily Report Aggregator",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        0
+      ],
+      "id": "ded0cfd7-08f1-4787-a9fb-4bf47ec4b42e",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1p5N--y20nk7ilUTqCAK2-akYKyWO0eFp0CL45Yqenh4",
+          "mode": "list",
+          "cachedResultName": "Team updates tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1p5N--y20nk7ilUTqCAK2-akYKyWO0eFp0CL45Yqenh4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1p5N--y20nk7ilUTqCAK2-akYKyWO0eFp0CL45Yqenh4/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        220,
+        0
+      ],
+      "id": "9f2c82c1-4c7e-4257-97ab-04f2a6801b44",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "nhXqG6m1rayAepmB",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 1,
+        "filters": {
+          "sender": "kidhir.m.ihub@snsgroups.com"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        220,
+        -200
+      ],
+      "id": "dfb7112f-c856-4212-9229-fadd035faf68",
+      "name": "Gmail",
+      "webhookId": "234b7860-636b-4c27-8036-6e9a05032bbe",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "AyjlkYbhyXg5MOM6",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Subject: Request to Draft a Professional Email to the Management Team\n\nPlease draft a professional email addressed to the Management team, providing a clear and concise update on the work status for a major project. The email should incorporate relevant information derived from email communications and a consolidated data sheet that contains combined data for the project. The email should be formal, well-structured, and include the following elements:\n\n1. **Recipient**: Address the email to the \"Management Team\" (no specific names required unless provided).\n2. **Subject Line**: Create a clear and professional subject line that reflects the purpose of the email, e.g., \"Work Status Update for [Project Name] Based on Email and Data Sheet Analysis.\"\n3. **Salutation**: Use a formal greeting, such as \"Dear Management Team,\".\n4. **Introduction**:\n   - Briefly introduce the purpose of the email (to provide a work status update for the major project).\n   - Mention that the update is based on recent email communications and a consolidated data sheet.\n   - Specify the project name (if not provided, use a placeholder like \"[Project Name]\" or \"Major Project\").\n5. **Body**:\n   - **Summary of Work Status**:\n     - Provide a high-level overview of the project’s current status (e.g., on track, ahead of schedule, or facing challenges).\n     - Highlight key milestones achieved or in progress, based on insights from emails and the data sheet.\n   - **Key Data Points from the Data Sheet**:\n     - Summarize critical metrics or findings from the consolidated data sheet (e.g., progress percentages, resource utilization, budget status, or timelines).\n     - Present the data in a clear, concise manner (e.g., bullet points or a brief paragraph).\n     - If specific data is unavailable, include a general statement about the data supporting the project’s status.\n   - **Insights from Email Communications**:\n     - Reference relevant updates or decisions communicated via email (e.g., approvals, feedback, or changes in scope).\n     - Ensure the tone remains professional and avoids quoting specific emails unless necessary.\n   - **Challenges or Risks (if applicable)**:\n     - Mention any obstacles or risks identified from the data or emails, along with mitigation steps being taken.\n   - **Next Steps**:\n     - Outline upcoming actions or milestones for the project.\n     - Indicate any support or decisions required from the Management team.\n6. **Closing**:\n   - Reiterate confidence in the project’s progress or commitment to addressing challenges.\n   - Invite the Management team to reach out for further details or clarification.\n   - Use a formal closing, such as \"Best regards,\" or \"Sincerely,\" followed by the sender’s name and title.\n7. **Sender Details**:\n   - Sign off with the name \"Hussain\" and, if appropriate, include a job title (e.g., \"Project Coordinator\" or \"Team Lead\"). If no title is provided, use only the name.\n8. **Tone and Style**:\n   - Maintain a professional, respectful, and confident tone throughout.\n   - Keep the email concise (aim for 200–300 words) while ensuring all key points are covered.\n   - Use clear, straightforward language, avoiding jargon unless necessary.\n9. **Additional Notes**:\n   - If specific project details, data points, or email content are not provided, use placeholders or general statements that align with a typical project update.\n   - Do not include attachments unless explicitly requested, but mention the data sheet as the source of information.\n   - Ensure the email is formatted for readability (e.g., short paragraphs, bullet points for key data).\n\nPlease provide the drafted email based on this prompt, ensuring it meets the requirements and reflects a professional communication style.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        500,
+        -160
+      ],
+      "id": "a7581c5e-f127-4272-b424-bc2f5b36f303",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-preview-05-20",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        540,
+        60
+      ],
+      "id": "d442a0e3-e97f-4838-a151-e2a4e280c994",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "O6ljSfaisfCD1inq",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "kidhirhussain@gmail.com",
+        "subject": "Work Status Update: Major [Projection Type/Project Name] Projection Analysis",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        920,
+        -160
+      ],
+      "id": "ea8acec8-9223-445b-9a0e-602d766e06ca",
+      "name": "Gmail1",
+      "webhookId": "1e1d8b25-d5d1-4e06-91f1-65cb5ea70583",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "AyjlkYbhyXg5MOM6",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6a23bcde-e6bd-4502-a9b5-d4f207efe0dc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "60dba8f1fb7dbc75eae08371df67764a4f777e1fc17d9fbb35a5128ed0d6e15c"
+  },
+  "id": "TarzdY4Toih5eK5k",
+  "tags": []
+}
