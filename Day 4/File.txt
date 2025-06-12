@@ -1,0 +1,2 @@
+Shareable Link: https://app.relevanceai.com/agents/d7b62b/edc9ba342df4-438e-9ff1-0fb503cd46cc/d97f1983-097c-4324-8590-fd63fe3cda7d/embed-chat?hide_tool_steps=false&hide_file_uploads=false&hide_conversation_list=false&bubble_style=agent&primary_color=%23685FFF&bubble_icon=pd%2Fchat&input_placeholder_text=Type+your+message...&hide_logo=false&hide_description=false
+Clonable Link: https://app.relevanceai.com/agents/d7b62b/edc9ba342df4-438e-9ff1-0fb503cd46cc/d97f1983-097c-4324-8590-fd63fe3cda7d/clone
